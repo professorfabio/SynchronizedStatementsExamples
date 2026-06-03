@@ -1,0 +1,41 @@
+public class SyncStatements {
+    private long c1 = 0;
+    private long c2 = 0;
+    private Object lock1 = new Object();
+    private Object lock2 = new Object();
+
+    public void inc1() {
+        synchronized(lock1) {
+            c1++;
+        }
+    }
+
+    public void inc2() {
+        synchronized(lock2) {
+            c2++;
+        }
+    }
+    
+    public static void main(String[] args) throws InterruptedException {
+	Thread t1, t2;
+	SyncStatements syncStmnt = new SyncStatements(); 
+
+	t1 = new Thread(() -> {
+		int i = 0;
+		while (i < 1000) { syncStmnt.inc1(); syncStmnt.inc2(); i++;}
+		System.out.println("t1 Stopped");
+	});
+
+	t2 = new Thread(() -> {
+		int i = 0;
+		while (i < 1000) { syncStmnt.inc1(); syncStmnt.inc2(); i++;}
+		System.out.println("t1 Stopped");
+	});
+	t1.start();
+	t2.start();
+	Thread.sleep(1000);
+
+	System.out.println("c1: " + syncStmnt.c1);
+	System.out.println("c2: " + syncStmnt.c2);
+    }
+}
